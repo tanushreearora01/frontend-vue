@@ -58,7 +58,7 @@ export default {
     async addProperty(newProperty) {
       try {
         const response = await axios.post('https://backend-server-housing-4b8bba9dad56.herokuapp.com/api/properties', newProperty);
-        this.properties.push(response.data);
+        // this.properties.push(response.data);
         this.showAddPropertyForm = false;
         this.getProperties();
       } catch (error) {
@@ -68,7 +68,8 @@ export default {
     async deleteProperty(propertyId) {
       try {
         await axios.delete(`https://backend-server-housing-4b8bba9dad56.herokuapp.com/api/properties/${propertyId}`);
-        this.properties = this.properties.filter((property) => property._id !== propertyId);
+        //this.properties = this.properties.filter((property) => property._id !== propertyId); 
+        this.getProperties();
       } catch (error) {
         console.error('Error deleting property:', error);
       }
@@ -76,10 +77,9 @@ export default {
     async editProperty(propertyId, updatedData) {
       try {
         await axios.put(`https://backend-server-housing-4b8bba9dad56.herokuapp.com/api/properties/${propertyId}`, updatedData);
-        // You can handle the success in the PropertyCard component
       } catch (error) {
         console.error('Error updating property:', error);
-        throw error; // Propagate the error to the PropertyCard component
+        throw error; 
       }
     },
     discardAddChanges() {
@@ -112,4 +112,3 @@ export default {
   display: flex;
 }
 </style>
-  

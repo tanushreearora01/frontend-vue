@@ -5,60 +5,8 @@
         <img :src="property.link&&property.link[0]" alt="Property Image" @click="showNextImage" style="cursor: pointer" />
       </figure>
       <div class="article-body">
-        <div v-if="!isEditing && mode != 'add'">
-          <h3>{{ property.type }} - {{ property.size }}</h3>
-          <p><strong>Price:</strong> {{ property.price }}</p>
-          <p><strong>Address:</strong> {{ property.address }}</p>
-          <p><strong>Room Distribution:</strong> {{ property.roomDistribution }}</p>
-          <p><strong>Broker Name:</strong> {{ property.brokerName }}</p>
-          <p><strong>Broker Number:</strong> {{ property.brokerNumber }}</p>
-          <p><strong>Booked:</strong> {{ property.booked ? "Yes" : "No" }}</p>
-        </div>
-        <div v-if="isEditing" class="input-container">
-          <div>
-            <label>Type:</label>
-            <select v-model="editedProperty.type">
-              <option value="House">House</option>
-              <option value="Flat">Flat</option>
-            </select>
-          </div>
-          <div>
-            <label>Size:</label>
-            <input v-model="editedProperty.size" />
-          </div>
-          <div>
-            <label>Price:</label>
-            <input v-model="editedProperty.price" />
-          </div>
-          <div>
-            <label>Address:</label>
-            <input v-model="editedProperty.address" />
-          </div>
-          <div>
-          <label>Room Distribution:</label>
-          <input v-model="editedProperty.roomDistribution"/>
-          </div>
-          <div>
-          <label>Photos Link:</label>
-          <input v-model="editedProperty.link"/>
-          </div>
-          <div>
-          <label>Broker Name:</label>
-          <input v-model="editedProperty.brokerName"/>
-          </div>
-          <div>
-          <label>Broker Number:</label>
-          <input v-model="editedProperty.brokerNumber"/>
-          </div>
-          <div>
-          <label>Booked:</label>
-          <select v-model="editedProperty.booked">
-            <option value="true">Yes</option>
-            <option value="false">No</option>
-          </select>
-          </div>
-          <!-- Add other input fields as needed -->
-        </div>
+        <PropertyCardReadOnly v-if="!isEditing && mode !== 'add'" :property="property" />
+        <PropertyCardEdit v-if="isEditing || mode === 'add'" :editedProperty="editedProperty" />
         <button v-if="!isEditing" @click="editProperty">Edit</button>
         <button v-if="isEditing && mode != 'add'" @click="submitChanges">
           Submit Changes
@@ -79,7 +27,13 @@
 </template>
 
 <script>
+import PropertyCardReadOnly from "./PropertyCardReadOnly.vue";
+import PropertyCardEdit from "./PropertyCardEdit.vue";
 export default {
+  components: {
+    PropertyCardReadOnly,
+    PropertyCardEdit,
+  },
   props: {
     property: Object,
     onDelete: Function,
@@ -101,7 +55,6 @@ export default {
         brokerName: this.property.brokerName,
         brokerNumber: this.property.brokerNumber,
         booked: this.property.booked,
-        // Add other fields as needed
       },
       showSuccessMessage: false,
       showErrorMessage: false,
@@ -123,7 +76,6 @@ export default {
       } else {
         this.showErrorMessage = true;
         this.errorMessage = "Please fill in all fields";
-        // You can hide the error message after a certain duration if needed
       }
     },
     discardAddChange() {
@@ -137,12 +89,10 @@ export default {
         this.showSuccessMessage = true;
         this.onSubmit();
         this.successMessage = "Property updated successfully";
-        // You can hide the success message after a certain duration if needed
       } catch (error) {
         console.error("Error updating property:", error);
         this.showErrorMessage = true;
         this.errorMessage = "Failed to update property";
-        // You can hide the error message after a certain duration if needed
       }
     },
     deleteProperty() {
@@ -164,10 +114,9 @@ export default {
       };
       this.showSuccessMessage = false;
       this.showErrorMessage = false;
-      this.isEditing = this.mode === "add"; // Reset isEditing based on the mode
+      this.isEditing = this.mode === "add"; 
     },
     isValid() {
-      // Add validation logic if needed
       return (
         this.editedProperty.type.trim() &&
         this.editedProperty.size.trim() &&
@@ -179,7 +128,6 @@ export default {
       );
     },
     showNextImage() {
-      // Increment the image index to display the next image
       if (this.newProperty.link && this.newProperty.link.length > 1) {
         this.imageIndex = (this.imageIndex + 1) % this.newProperty.link.length;
         this.imageUrl = this.newProperty.link[this.imageIndex];
@@ -212,7 +160,6 @@ article a::after {
   content: "";
 }
 
-/* basic article elements styling */
 article h2 {
   margin: 0 0 18px 0;
   font-family: "Bebas Neue", cursive;
@@ -261,7 +208,6 @@ article a .icon {
   transition: all 0.3s;
 }
 
-/* using the has() relational pseudo selector to update our custom properties */
 article:has(:hover, :focus) {
   --img-scale: 1.1;
   --title-color: #28666e;
@@ -269,14 +215,5 @@ article:has(:hover, :focus) {
   --link-icon-opacity: 1;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px,
     rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
-}
-
-.input-container {
-  display: flex;
-  flex-direction: column;
-}
-
-.input-container input {
-  margin-bottom: 5px;
 }
 </style>
